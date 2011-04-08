@@ -1,0 +1,157 @@
+<? 
+//    Copyright (C) 2008,2009,2010 Guylhem
+//
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU Affero General Public License as
+//    published by the Free Software Foundation, either version 3 of the
+//    License, or (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU Affero General Public License for more details.
+//
+//    You should have received a copy of the GNU Affero General Public License
+//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+include "functions.php";
+
+// FIXME: rajouter graphes classes age/sexe, camembert provenances departement
+
+echo "<html><head><title>Bilan de l'ann&eacute;e 2008</title></head><body>";
+
+$connect = pg_connect("dbname=chu user=test host=127.0.0.1 port=5432 password=test") or die('Connexion impossible : ' . pg_ErrorMessage());
+pg_exec("SET client_encoding TO latin1;");
+$uf_nbr=pget("select distinct(uf) from rss_2008 order by uf", 1, $uf_l);
+
+$uf_cur=0;
+// while ($uf_cur < 3 ) { // Boucle de tests
+while ($uf_cur < $uf_nbr) { // Boucle par UF
+echo "<h2>UF $uf_l[$uf_cur]</h2>";
+
+$nbr_sorties = pget("select count (iep) from rss_2008 where uf=" .  $uf_l[$uf_cur]);
+$nbr_hommes = pget("select count (iep) from rss_2008 where sexe='1' and uf=" .  $uf_l[$uf_cur]);
+$nbr_femmes = pget("select count (iep) from rss_2008 where sexe='2' and uf=" .  $uf_l[$uf_cur]);
+$nbr_journees = pget ("select sum(case when date_sortie_uf=date_entree_uf then 1 else extract (day from date_sortie_uf-date_entree_uf) end) from rss_2008 where uf=" .  $uf_l[$uf_cur]);
+$query="select
+count (case when extract(day from date_sortie_uf-date_entree_uf)=0 then 1 end) as ambulatoire,
+count (case when extract(day from date_sortie_uf-date_entree_uf)=1 then 1 end) as une_nuit,
+count (case when extract(isodow from date_entree_uf)+extract(day from
+date_sortie_uf-date_entree_uf)<6 and extract(day from
+date_sortie_uf-date_entree_uf)>1 then 1 end) as semaine,
+count (case when extract(isodow from date_entree_uf)+extract(day from
+date_sortie_uf-date_entree_uf)>5 and extract(day from
+date_sortie_uf-date_entree_uf)>1 then 1 end) as complete
+from rss_2008 where uf=" .  $uf_l[$uf_cur];
+pget ($query,6, $hospitalisations_t);
+
+$nbr_urgences=pget("select count (iep) from rss_2008 where entree=8 and provenance=5 and uf=" .  $uf_l[$uf_cur]);
+$nbr_direct=pget("select count (iep) from rss_2008 where entree=8 and (not provenance=5 or provenance is null) and uf=" .  $uf_l[$uf_cur]);
+$nbr_mutations=pget("select count (iep) from rss_2008 where entree=6 and uf=" .  $uf_l[$uf_cur]);
+$nbr_transferts=pget("select count (iep) from rss_2008 where entree=7 and uf=" .  $uf_l[$uf_cur]);
+$nbr_deces=pget("select count (iep) from rss_2008 where sortie=9 and uf=" .  $uf_l[$uf_cur]);
+$query="select avg(extract(day from date_sortie_uf-ddn)/365.25),
+min(extract(day from date_sortie_uf-ddn)/365.25), max(extract(day from
+date_sortie_uf-ddn)/365.25) from rss_2008 where uf=" .  $uf_l[$uf_cur] . " group by uf";
+pget($query, 6, $age_t);
+
+echo "<h3>Indicateurs h&ocirc;telliers:</h3>";
+echo "<ul>";
+echo "<li>Nombre d'entr&eacute;es:</li>";
+echo "<ul>";
+echo "<li>Dont directe: " . $nbr_direct . " soit " . round($nbr_direct*100/$nbr_sorties,2) . " %</li>";
+echo "<li>Dont urgences: " . $nbr_urgences . " soit " . round($nbr_urgences*100/$nbr_sorties,2) . " %</li>";
+echo "<li>Dont mutations: " . $nbr_mutations . " soit " . round($nbr_mutations*100/$nbr_sorties,2) . " %</li>";
+echo "<li>Dont transferts: " . $nbr_transferts . " soit " . round($nbr_transferts*100/$nbr_sorties,2) . " %</li>";
+echo "</ul>";
+echo "<li>Nombre de d&eacute;c&egrave;s: " . $nbr_deces . " soit " . round($nbr_deces*100/$nbr_sorties,2) . "%</li>";
+echo "<li>Nombre de sorties: " . $nbr_sorties . "</li>";
+echo "<li>Nombre de journ&eacute;es: " . $nbr_journees . "</li>";
+echo "<ul>";
+echo "<li>Dont s&eacute;jours < 24h: " . $hospitalisations_t[0] . " soit " . round($hospitalisations_t[0]*100/$nbr_journees,2) . "% (h&ocirc;pital de jour)</li>";
+echo "<li>Dont s&eacute;jours 24h-48h: " . $hospitalisations_t[1] . " soit " . round($hospitalisations_t[1]*100/$nbr_journees,2) . "% (hospitalisation ambulatoire)</li>";
+echo "<li>Dont s&eacute;jours hors-we: " . $hospitalisations_t[2] . " soit " . round($hospitalisations_t[2]*100/$nbr_journees,2) . "% (h&ocirc;pital de semaine)</li>";
+echo "<li>Dont s&eacute;jours we-inclus: " . $hospitalisations_t[3] . " soit " . round($hospitalisations_t[3]*100/$nbr_journees,2) . "% (hospitalisation compl&egrave;te)</li>";
+echo "</ul>";
+echo "<li>Sex ratio: " . round($nbr_hommes/$nbr_femmes, 2) . "</li>";
+echo "<li>&Acirc;ge: moyen: " . round ($age_t[0],2) . " ans , min: " .  round ($age_t[1],2) . " ans , max: " . round ($age_t[2],2) . " ans </li>";
+echo "<li>DMS: " . round($nbr_journees/$nbr_sorties, 2) . "</li>";
+
+// FIXME: table du nombre de lits retenus
+// FIXME: calcul du taux d'occupation
+
+echo "</ul>";
+
+$nbr_rss = pget("select count(distinct iep) from rss_2008 where uf=" .  $uf_l[$uf_cur]);
+$nbr_sceances=pget("select sum(case when sceances_nbr is null then 0 else sceances_nbr end) from evaluation_rum_2008, rss_2008 where uf=" .  $uf_l[$uf_cur] . " and evaluation_rum_2008.rss=rss_2008.rss and uf_nbr=1");
+
+$valorisation_ghs=pget("select case when sum(valo_multirum) is null then 0 else sum(valo_multirum) end + case when sum(valo_monorum) is null then 0 else sum(valo_monorum) end from evaluation_valo_monorum_uf, evaluation_valo_multirum_uf where evaluation_valo_multirum_uf.uf=evaluation_valo_monorum_uf.uf and evaluation_valo_monorum_uf.uf=" .  $uf_l[$uf_cur]);
+
+// FIXME : nbr patients distincts
+// FIXME : nbr rsa rembouses am
+// FIXME : erreurs de chainage
+// FIXME : erreurs de groupage
+// FIXME : tot valorisation + supplements
+// FIXME : mon et dmi
+// FIXME : cma cmas pris en compte
+// FIXME : icr produits
+
+echo "<h3>Indicateurs &eacute;conomiques:</h3>";
+echo "<ul>";
+echo "<li>Nombre de RSS: " . $nbr_rss . " s&eacute;jours</li>";
+echo "<li>Nombre de sc&eacute;ances: " . $nbr_sceances . " sc&eacute;ances</li>";
+echo "<li>Valorisation totale par GHS: " . round($valorisation_ghs,2) . " Eur </li>";
+echo "<li>Valorisation totale par suppl&eacute;ments: <b>non calculee</b></li>";
+echo "<li>Valorisation moyenne par patient: " . round($valorisation_ghs/$nbr_rss,2) . " Eur </li>";
+echo "</ul>";
+
+$query="select distinct(dp), cim10_libelle_court, count (*) from
+ab_cim10, rss_2008, evaluation_rum_2008 where cim10_code=dp and evaluation_rum_2008.rss=rss_2008.rss and uf_nbr=1 and  uf=" . $uf_l[$uf_cur] . " group by dp,
+cim10_libelle_court order by count desc limit 20";
+$dp20_nbr=pget ($query,1, $dp20_cim_l, $dp20_lib_l, $dp20_nbr_l);
+$query="select distinct(das), cim10_libelle_court, count (*) from
+ab_cim10, rss_2008, rss_diags_2008, evaluation_rum_2008 where code_sq_fk=code_sq_pk
+and cim10_code=das and evaluation_rum_2008.rss=rss_2008.rss and uf_nbr=1 and uf=" . $uf_l[$uf_cur] . " group by das, cim10_libelle_court order
+by count desc limit 20";
+$das20_nbr=pget ($query,1, $das20_cim_l, $das20_lib_l, $das20_nbr_l);
+$query="select distinct(code_ccam), count (*) from rss_2008,
+evaluation_rum_2008,
+rss_actes_2008 where code_sq_fk=code_sq_pk and evaluation_rum_2008.rss=rss_2008.rss and uf_nbr=1 and uf=" . $uf_l[$uf_cur] . " group by
+code_ccam order by count desc limit 20";
+;
+// FIXME : libelles CCAM
+$ccam20_nbr=pget ($query,1, $ccam20_cim_l, $ccam20_lib_l, $ccam20_nbr_l);
+
+echo "<h3>Indicateurs m&eacute;dicaux:</h3>";
+echo "<ul>";
+echo "<li>Vingt premiers DP (hors s&eacute;jours multi-unit&eacute;es) :</li><br>";
+$dp20_cur=0;
+while ($dp20_cur<$dp20_nbr) {
+if ($dp20_lib_l[$dp20_cur])
+echo "$dp20_nbr_l[$dp20_cur] x $dp20_cim_l[$dp20_cur] : $dp20_lib_l[$dp20_cur] <br>";
+$dp20_cur++;
+}
+echo "</br>";
+echo "<li>Vingt premiers DAS (hors s&eacute;jours multi-unit&eacute;es) :</li><br>";
+$das20_cur=0;
+while ($das20_cur<$das20_nbr) {
+if ($das20_lib_l[$das20_cur])
+echo "$das20_nbr_l[$das20_cur] x $das20_cim_l[$das20_cur] : $das20_lib_l[$das20_cur] <br>";
+$das20_cur++;
+}
+echo "</br>";
+echo "<li>Vingt premiers actes CCAM (hors s&eacute;jours multi-unit&eacute;es) :</li><br>";
+$ccam20_cur=0;
+while ($ccam20_cur<$ccam20_nbr) {
+if ($ccam20_lib_l[$ccam20_cur])
+echo "$ccam20_nbr_l[$ccam20_cur] x $ccam20_cim_l[$ccam20_cur] : $ccam20_lib_l[$ccam20_cur] <br>";
+$ccam20_cur++;
+}
+
+echo "</br>";
+echo "</ul>";
+echo "<hr />";
+$uf_cur++;
+} // Boucle par UF
+
+?>

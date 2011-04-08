@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--this design was created by Vacant (Chris Blunden), http://www.web-site.tk             
+Deep, version 1.5 created on 17/10/04 for OSWD.org - DO NOT REMOVE this notice. Thanks. -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<title>Le PMSI avec PERL et Postgres SQL et R et ...</title>
+	<link rel="stylesheet" type="text/css" href="style.css" />
+	</head>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ?
+"https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost +
+"google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-16049862-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+	<body>
+				<div class="bgtextpage">PerlMSI</div>	
+				<div id="textpage">
+				<a href="presentation.html">pr&eacute;sentation</a><p>
+				<a href="blog.html">blog</a><p>
+				<a href="archives.html">archives</a><p>
+				<a href="references.html">références</a><p>
+				<a href="copyright-fr.html">copyrights</a><p>
+				<a href="telecharger.html">télécharger</a><p>
+				<a href="mailto:perlmsi@googlegroups.com">contact</a><p>
+				</div>
+
+		<div id="outer">
+			<div id="inner">
+			
+	
+			
+				 <div id="subbgtext">Le PMSI avec PERL et Postgres SQL et R et ...</div>
+				 	  
+					  <div id="content">
+					  	   <a name="top"></a> <!-- very important! this is the anchor for the back to top feature. Remove it at your own risk! :P -->
+
+						   <b>formules de calcul de valorisation</b>
+							Valorisation totale en formule par année pour rsa2sql.
+
+
+Les tarifs appliqués doivent tenir compte du coefficient géographique et du changement de version au fil de l'année. Utiliser donc les bases de données de tarif et de suppléments. Les colonnes correspondent au noms créés par rsa2sql.pl, ce qui permet de gérer les changement de classification au cours d'une année. 
+
+Année 2004
+
+Valorisation GHS
+-	inferieur_bornebasse * 0.5 * Valorisation GHS
++	depassement_bornehaute * Tarif EXH
++	duree_rea * Tarif REA
++	nbr_actes_dialyse * Tarif GHM 24Z01Z (GHS 8299)
++	nbr_actes_ghm_24z05z * Tarif GHM 24z05z (GHS 8303)
++	nbr_actes_ghm_24z06z * Tarif GHM 24z06z (GHS 8304)
++	nbr_actes_ghm_24z07z * Tarif GHM 24z07z (GHS 8305)
+
+Année 2005
+
+Valorisation GHS
+-	inferieur_bornebasse * 0.5 * Valorisation GHS
++	depassement_bornehaute * Tarif EXH
++	duree_rea * Tarif REA
++	0 * nbr_actes_dialyse * Tarif GHM 24Z01Z (GHS 8299)
++	supplement_rea* Tarif SRA
++	supplement_si_de_rea* Tarif STF
++	supplement_stf* Tarif STF
++	supplement_src * Tarif SRC
++	supplement_nn1 * Tarif NN1
++	supplement_nn2 * Tarif NN2
++	supplement_nn3 * Tarif NN3
++	type_prelevement_organe * Tarif PO1
++	nbr_actes_ghm_24z05z * Tarif GHM 24z05z (GHS 8303)
++	nbr_actes_ghm_24z06z * Tarif GHM 24z06z (GHS 8304)
++	nbr_actes_ghm_24z07z * Tarif GHM 24z07z (GHS 8305)
+
+Année 2006
+
+Valorisation GHS
+-   inferieur_bornebasse * 0.5 * Valorisation GHS
++   depassement_bornehaute * Tarif EXH
++   Si GHS hors liste"4257","4258","8299","8283", nbr_actes_dialyse * Tarif GHM 24Z01Z (GHS 8299)
++   supplement_sra* Tarif SRA
++   supplement_rea* Tarif REA
++   supplement_si_de_rea* Tarif STF
++   supplement_stf* Tarif STF
++   supplement_ssc * Tarif SSC
++   supplement_src * Tarif SRC
++   supplement_nn1 * Tarif NN1
++   supplement_nn2 * Tarif NN2
++   supplement_nn3 * Tarif NN3
++   type_prelevement_organe * Tarif PO1
++   (si mois_sortie<= 2) nbr_actes_ghm_24z05z * Tarif GHM 24z05z (GHS 8303)
++   (si mois_sortie<= 2) nbr_actes_ghm_24z06z * Tarif GHM 24z06z (GHS 8304)
++   (si mois_sortie<= 2) nbr_actes_ghm_24z07z * Tarif GHM 24z07z (GHS 8305)
++   (si mois_sortie>= 3) nbr_actes_ghm_28z11z * Tarif GHM 28z11z (GHS 9510)
++   (si mois_sortie>= 3) nbr_actes_ghm_28z12z * Tarif GHM 28z12z (GHS 9511)
++   (si mois_sortie>= 3) nbr_actes_ghm_28z13z * Tarif GHM 28z13z (GHS 9512)
+
+Année 2007
+
+Valorisation GHS
+-   inferieur_bornebasse * 0.5 * Valorisation GHS
++   depassement_bornehaute * Tarif EXH
++   supplement_sra * Tarif SRA
++   supplement_rea * Tarif REA
++   supplement_si_de_rea * Tarif STF
++   supplement_stf * Tarif STF
++   supplement_ssc * Tarif SSC
++   supplement_src * Tarif SRC
++   supplement_nn1 * Tarif NN1
++   supplement_nn2 * Tarif NN2
++   supplement_nn3 * Tarif NN3
++   supplement_rep * Tarif REP
++   type_prelevement_organe * Tarif PO1 (PO1= 7947?)
++   nbr_actes_ghm_24z05z_ou_28z11z * Tarif GHS 9510 (GHM 28z11z)
++   nbr_actes_ghm_24z06z_ou_28z12z * Tarif GHS 9511 (GHM 28z12z)
++   nbr_actes_ghm_24z07z_ou_28z13z * Tarif GHS 9512 (GHM 28z13z)
++   supplement_caisson_hyperbare * Tarif GHS 9514 (GHM 28Z15Z)
++   supplement_hemodialyse_hs * Tarif GHS 9503
++   supplement_entraitement_dialyseperit_auto_hs * Tarif GHS 9520
++   supplement_entraitement_dialyseperit_ambu_hs * Tarif GHS 9521
++   supplement_entraitement_hemodialyse_hs * Tarif GHS 9522
+   
+Année 2008
+
+Valorisation GHS
+-	inferieur_bornebasse * 0.5 * Valorisation GHS
++	depassement_bornehaute * Tarif EXH
++	supplement_rea * Tarif REA
++	supplement_si_de_rea * Tarif STF
++	supplement_stf * Tarif STF
++	supplement_ssc * Tarif SSC
++	supplement_src * Tarif SRC
++	supplement_nn1 * Tarif NN1
++	supplement_nn2 * Tarif NN2
++	supplement_nn3 * Tarif NN3
++	supplement_rep * Tarif REP
++	type_prelevement_organe * Tarif PO1 (si mois <= 2, PO1= 7947€ et si mois >=3, PO1 = 7283€)
++	supplement_caisson_hyperbare * Tarif GHS 9514
++	nbr_actes_ghs_9510 * Tarif GHS 9510
++	nbr_actes_ghs_9511 * Tarif GHS 9511
++	nbr_actes_ghs_9512 * Tarif GHS 9512
++	nbr_actes_ghs_9515 * Tarif GHS 9515
++	nbr_actes_ghs_9524 * Tarif GHS 9524
+					 </div>
+			
+			</div>
+		</div>
+		
+	</body>
+
+</html>

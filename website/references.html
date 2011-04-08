@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--this design was created by Vacant (Chris Blunden), http://www.web-site.tk             
+Deep, version 1.5 created on 17/10/04 for OSWD.org - DO NOT REMOVE this notice. Thanks. -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />	
+	<title>Le PMSI avec PERL et Postgres SQL et R et ...</title>
+	<link rel="stylesheet" type="text/css" href="style.css" />
+	</head>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ?
+"https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost +
+"google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-16049862-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+	<body>
+				<div class="bgtextpage">PerlMSI</div>	
+				<div id="textpage">
+				<a href="presentation.html">pr&eacute;sentation</a><p>
+				<a href="blog.html">blog</a><p>
+				<a href="archives.html">archives</a><p>
+				<a href="references.html">références</a><p>
+				<a href="copyright-fr.html">copyrights</a><p>
+				<a href="telecharger.html">télécharger</a><p>
+				<a href="mailto:perlmsi@googlegroups.com">contact</a><p>
+				</div>
+
+		<div id="outer">
+			<div id="inner">
+			
+	
+			
+				 <div id="subbgtext">Le PMSI avec PERL et Postgres SQL et R et ...</div>
+				 	  
+					  <div id="content">
+					  	   <a name="top"></a> <!-- very important! this is the anchor for the back to top feature. Remove it at your own risk! :P -->
+						   <b>Références officielles</b>
+							<p>Vu la pléthore de documents paraissant sur le domaine du PMSI et de la T2A, la veille documentaire peut s'avérer compliqué. Vous trouverez donc rassemblé ici les documents les plus importants pour bien utiliser les programmes de la suite PerlMSI. N'hésitez-pas à signaler toute erreur ou omission !
+							<ul>
+							<li><a href="references/journal-officiel">arrêtés tarifaires et arrêtés de classification</a> : classés par année, par dates d'effet (au format ISO) et par numéro de publication vous permettant de les retrouver sur <a href="http://legifrance.gouv.fr/initRechExpTexteJorf.do?from=jorf">LégiFrance</a>: <ul><br>
+								<li>2004 : de 20040101 à 20041231 : JO du 20040822, NOR: SANH0421476A</li>
+								<li>2005 : BO santé du 20050515, NOR: SANH0530156C</li>
+								<li>2005 et 2006 : de 20050101 à  20060314: JO du 20050216, NOR: SANH0520347A</li>
+								<li>2006 : de 20060315 à 20060831 : JO du 20050216, NOR: SANH0621070A</li>											<li>2006 : de 20060901 à 20061231 : JO du 20060831, NOR: SANH0623505A</li>
+								<li>2007 : de 20070101 à 20071231 : JO du 20070228, NOR: SANH0720868A + rectificatif JO du 20070304, NOR: SANH0720916A</li>
+								<li>2008 : de 20080101 à 20080229 : JO du 20071230, NOR: SJSH0774434A</li>
+								<li>2008 et 2009 : de 20080301 à 20090928 : JO du 20080304, NOR: SJSH0805156A + JO du 20080305, NOR: SJSH080524A</li>
+								<li>2009 et 2010 : de 20090301 à 20100228 : JO du 20090226, NOR: SASH0904095A + JO du 20090228, NOR: SASH0904332A + rectificatif JO du 20090307, NOR: SASH0904332Z
+								<li>2010 : JO du 20100228, NOR: SASH1004835A</li>
+								
+							</ul></li><br>
+							<li><a href="formats-atih">formats de l'ATIH</a> : uniquement classé par année et par type, vu l'absence de système similaire au numéro NOR de LégiFrance</li>
+							</ul></p>
+							<p>&nbsp;</p><hr /><p>&nbsp;</p>
+						<b>Documents créés à partir de ces références</b>
+						<p>Pour faciliter l'utilisation des différents programmes PerlMSI, des synthèses rassemblant les différentes valeurs et formules données par les références officielles ont été créés.
+						<ul><br>
+							<li><a name="tarifs"></a><a href="references/calculs-valorisation/tarifs.csv">base de donnée des tarifs de GHS</a> : créée à partir des chiffres du journal officiel, elle comprend les bornes, les dates de validité et tout ce qui est nécessaire pour les calculs</li>
+							<li><a name="supplements"></a><a href="references/calculs-valorisation/supplements.csv">base des tarifs des suppléments</a> : créée à partir des chiffres du journal officiel, elle est encore en travaux et peut être incomplète</li>
+							<li><a name="formules"></a><a href="references-valorisation.html">formules de calcul de valorisation</a> : ces formules mathématiques créées à partir des références officielles permettent de calculer les valeurs par séjour à partir d'un fichier RSA, pour vérifier que les sommes de l'arrêté de versement soient conformes à ce qui est attendu.
+</ul>
+<a href="references/calculs-valorisation/valorisation-totale.txt">Du pseudo-code est mis à votre disposition</a> pour calculer la valorisation totale d'un séjour, suppléments inclus, en utilisant les colonnes créées par rsa2sql, ce qui permet de gérer les changement de classification au cours d'une année. Une version utilisant un fichier RSS au lieu d'un fichier RSA nécessiterait un algorithme de groupage libre - le seul existant est propriétaire et payant, vendu par l'ATIH. Ce n'est donc pas possible pour l'instant même si <a href="telecharger.html#rss2euro">des travaux sont en cours avec rss2euro</a>
+<p>
+Les tarifs appliqués doivent tenir compte du coefficient géographique et du changement de version au fil de l'année - utilisez-donc les <a href="references/calculs-valorisation/tarifs.csv">bases de données des tarifs des GHS</a> et <a href="references/calculs-valorisation/supplements.csv">des suppléments</a>. Des <a href="references/calculs-valorisation/sql">exemples d'implémentation en sql sont aussi proposés</a>, en attendant l'intégration dans la <a href="telecharger.html#bibliotheque_perlmsi">bibliothèque PerlMSI</a> de fonctions de calcul direct, sans devoir passer par une base SQL. Parmi ces exemples SQL, seuls 2004 et 2005 ont été correctement testés. Ils donnent des résultats correct à l'Euro près.
+<p>
+Détail amusant : <a href="references/calculs-valorisation/sql/2005.sql">en 2005 une possible erreur de l'ATIH a été notée</a> : impossible de tomber sur la bonne valorisation des prélèvements d'organes en utilisant la valorisation du PO alors en vigueur (7243 Eur). Il faut utiliser 7900 Eur, valeur nullement mentionné sur le Journal Officiel ou les arrêtés en vigueur à cette période, pour obtenir les mêmes chiffres que l'arrêté de versement. Il est possible qu'il s'agisse d'une erreur de 2005.sql ... ou de l'implémentation de l'ATIH, d'où l'intérêt de croiser deux implémentations différentes, suivant deux méthodes différentes, pour valider les résultats !
+<p>
+N'hésitez-donc pas à vérifier nos calculs et vos arrêtés de versement, et à nous proposer toute correction pour les implémentations de 2006 et au delà.
+							<p>&nbsp;</p><hr /><p>&nbsp;</p>
+							<b>Sites recommandés</b>
+						   <ul>
+						   <li><a href="http://chazard.org/emmanuel/enseignements">chazard.org/emmanuel/_enseignements</a> : Les excellents cours du Dr Chazard</a></li>
+						   <li><a href="http://martaa.free.fr/">martaa.free.fr</a> : Pour d'autres outils SQL, plus orienté MySQL</li>
+							<li><a href="http://www.departement-information-medicale.com/">www.departement-information-medicale.com</a> : L'actualité commentée (ex dim68.unblog.fr)</li>
+							<li><a href="monsite.wanadoo.fr/pmsi">monsite.wanadoo.fr/pmsi</a> : Les lettres d'actualité</li></ul>
+							<p>Si vous avez un site que vous souhaitez voir rajouté à cette liste, merci de nous contacter !</p>
+					 </div>
+			
+			</div>
+		</div>
+		
+	</body>
+
+</html>

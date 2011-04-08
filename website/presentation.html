@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--this design was created by Vacant (Chris Blunden), http://www.web-site.tk             
+Deep, version 1.5 created on 17/10/04 for OSWD.org - DO NOT REMOVE this notice. Thanks. -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<title>Le PMSI avec PERL et Postgres SQL et R et ...</title>
+	<link rel="stylesheet" type="text/css" href="style.css" />
+	</head>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ?
+"https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost +
+"google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-16049862-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+	<body>
+				<div class="bgtextpage">PerlMSI</div>	
+				<div id="textpage"><div id="currentpage">pr&eacute;sentation</div><p>
+				<a href="blog.html">blog</a><p>
+				<a href="archives.html">archives</a><p>
+				<a href="references.html">références</a><p>
+				<a href="copyright-fr.html">copyrights</a><p>
+				<a href="telecharger.html">télécharger</a><p>
+				<a href="mailto:perlmsi@googlegroups.com">contact</a><p>
+				</div>
+
+		<div id="outer">
+			<div id="inner">
+			
+	
+			
+				 <div id="subbgtext">Le PMSI avec PERL et Postgres SQL et R et ...</div>
+				 	  
+					  <div id="content">
+					  	   <a name="top"></a> <!-- very important! this is the anchor for the back to top feature. Remove it at your own risk! :P -->
+<b>Le projet PerlMSI vise à aider les départements d'information médicale à analyser leur données.</b>
+<p>De nombreux logiciels commerciaux existent, et des approchent « maison » sont aussi possibles.</p>
+<p>Mais PerlMSI se distingue de l'existant par :</p>
+<ul>
+ <li> sa vitesse de traitement de gros volumes de données; par exemple charger un fichier RSS et en obtenir le casemix ne prend que quelques secondes</li>
+ <li> sa réduction de la complexité informatique : plus besoin de serveur dédié, PerlMSI fonctionnant sur tout système MacOSX, Windows ou Linux</li>
+ <li> sa facilité de distribution et de maintenance : en tant que logiciel libre, vous pouvez le copier ou le modifier sans contrainte, la seule obligation étant de redistribuer vos modifications conformément à la licence d'utilisation GPLv3 avec clause Affero</li>
+ <li> sa souplesse d'utilisation : que vous vouliez charger les données RSS dans une base de donnée SQL, un tableur Excel, ou les traiter directement sous R, créez votre programme à partir des « briques » disposibles ! Un clic et toutes vos données seront alors converties !</li>
+ <li> son extensibilité : tout développeur Perl peut vous apporter les fonctions qui vous manquent.</li>
+ <li> sa transparence : vous pouvez vous-même étudier dans le code source les méthodes de calculs utilisées, voire les corriger, ou tester d'autres hypothèses</li>
+</ul>
+
+<p>Peut être avez-vous déjà un logiciel de traitement de données PMSI qui vous satisfait, et vous croyez que pour vous, les améliorations de PerlMSI ne changeraient pas grand chose. Mais maintenant que le PMSI est l'outil médico-économique de base des établissements de santé, il faut répondre à de nouveaux besoins. Il faut être capable de faire plus de calculs, plus rapidement, et plus simplement. Et surtout, pouvoir répondre à de nouvelles questions.</p>
+
+<p>Est-ce que votre logiciel actuel est capable d'effectuer des simulations, où par exemple vous étudiez les conséquences de l'augmentation ou de la réduction de la durée de séjour d'un groupe de patients ? Pouvez-vous proposer plusieurs scénarios économiques, suite à un meilleur dépistage d'une complication ? Savez-vous extraire les sous-groupes de profil différents à l'intérieur d'un même GHM et d'une même UF ?</p>
+
+<p>À l'époque où le PMSI n'était utilisé que pour des obligations de déclaration, s'intéresser aux dossiers en erreur était important. Actuellement, et encore plus à l'avenir, il va falloir évaluer des propositions de modifications dans la prise en charge des patients.</p>
+
+<p>PerlMSI a pour objectif de couvrir progressivement ces nouveaux usages. Pour l'instant, il est déjà possible de charger beaucoup de fichiers dans une base SQL (RSS, RSA, FICHCOMP, TRA pour le lien RSS/RSA), de faire quelques estimations de valorisation en euros (que ce soit à partir du RSA ou du RSS), et de reconvertir les bases SQL en fichiers.</p>
+
+<p>Parmi les projets d'extension de PerlMSI figure :</p>
+<ul>
+ <li> l'extension aux autres domaines au fur et à mesure de leur mise sous T2A: activité externe, SSR, ...</li>
+ <li> l'inclusion du traitement des LPP, UCD, LNP par les fichiers NX total
+de www.codage.ext.cnamts.fr pour les FICHCOMP</li>
+ <li> l'inclusion du traitement des actes CCAM par les fichiers NX total</li>
+ <li> la création d'une fonction de groupage libre de droit, à partir de la documentation publiée par l'ATIH</li>
+</ul>
+ 
+<p>Toutes les contributions sont les bienvenue car le projet est public et collaboratif. N'hésitez-donc pas à rejoindre la liste de diffusion pour proposer des corrections ou de nouvelles fonctions.</p>
+					 
+					 </div>
+			
+			</div>
+		</div>
+		
+	</body>
+
+</html>

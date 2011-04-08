@@ -1,0 +1,344 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--this design was created by Vacant (Chris Blunden), http://www.web-site.tk             
+Deep, version 1.5 created on 17/10/04 for OSWD.org - DO NOT REMOVE this notice. Thanks. -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<title>Le PMSI avec PERL et Postgres SQL et R et ...</title>
+	<link rel="stylesheet" type="text/css" href="style.css" />
+	</head>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ?
+"https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost +
+"google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-16049862-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+	<body>
+				<div class="bgtextpage">PerlMSI</div>	
+				<div id="textpage">
+				<a href="presentation.html">pr&eacute;sentation</a><p>
+				<a href="blog.html">blog</a><p>
+				<div id="currentpage">archives</div><p>
+				<a href="references.html">références</a><p>
+				<a href="copyright-fr.html">copyrights</a><p>
+				<a href="telecharger.html">télécharger</a><p>
+				<a href="mailto:perlmsi@googlegroups.com">contact</a><p>
+				</div>
+
+		<div id="outer">
+			<div id="inner">
+			
+	
+			
+				 <div id="subbgtext">Le PMSI avec PERL et Postgres SQL et R et ...</div>
+				 	  
+					  <div id="content">
+					  	   <a name="top"></a> <!-- very important! this is the anchor for the back to top feature. Remove it at your own risk! :P -->
+<b>Quels croisements SQL peut on faire ?</b>
+<p>J'ai trouvé lors de mes navigation un très bon exemple des différents types de join avec PostgreSQL. Prenons donc 2 tables:
+<ul>
+<li>t1</li>
+<pre>
+ num | name
+-----+------
+   1 | a
+   2 | b
+   3 | c
+</pre>
+<li>t2</li>
+<pre>
+ num | value
+-----+-------
+   1 | xxx
+   3 | yyy
+   5 | zzz
+</pre>
+</ul>
+On va leur appliquer différents type de jointures : les résultats parlent d'eux même !
+<ul>
+<li><b>CROSS JOIN</b></li>
+<pre>
+=> SELECT * FROM t1 CROSS JOIN t2;
+ num | name | num | value
+-----+------+-----+-------
+   1 | a    |   1 | xxx
+   1 | a    |   3 | yyy
+   1 | a    |   5 | zzz
+   2 | b    |   1 | xxx
+   2 | b    |   3 | yyy
+   2 | b    |   5 | zzz
+   3 | c    |   1 | xxx
+   3 | c    |   3 | yyy
+   3 | c    |   5 | zzz
+(9 rows)
+</pre>
+<li><b>INNER JOIN</b></li>
+<pre>
+=> SELECT * FROM t1 INNER JOIN t2 ON t1.num = t2.num;
+ num | name | num | value
+-----+------+-----+-------
+   1 | a    |   1 | xxx
+   3 | c    |   3 | yyy
+(2 rows)
+
+=> SELECT * FROM t1 INNER JOIN t2 USING (num);
+ num | name | value
+-----+------+-------
+   1 | a    | xxx
+   3 | c    | yyy
+(2 rows)
+</pre>
+<li><b>NATURAL INNER JOIN</b></li>
+<pre>
+=> SELECT * FROM t1 NATURAL INNER JOIN t2;
+ num | name | value
+-----+------+-------
+   1 | a    | xxx
+   3 | c    | yyy
+(2 rows)
+</pre>
+<li><b>LEFT JOIN</b></li>
+<pre>
+=> SELECT * FROM t1 LEFT JOIN t2 ON t1.num = t2.num;
+ num | name | num | value
+-----+------+-----+-------
+   1 | a    |   1 | xxx
+   2 | b    |     |
+   3 | c    |   3 | yyy
+(3 rows)
+
+=> SELECT * FROM t1 LEFT JOIN t2 USING (num);
+ num | name | value
+-----+------+-------
+   1 | a    | xxx
+   2 | b    |
+   3 | c    | yyy
+(3 rows)
+</pre>
+<li><b>RIGHT JOIN</b></li>
+<pre>
+=> SELECT * FROM t1 RIGHT JOIN t2 ON t1.num = t2.num;
+ num | name | num | value
+-----+------+-----+-------
+   1 | a    |   1 | xxx
+   3 | c    |   3 | yyy
+     |      |   5 | zzz
+(3 rows)
+</pre>
+<li><b>FULL JOIN</b></li>
+<pre>
+=> SELECT * FROM t1 FULL JOIN t2 ON t1.num = t2.num;
+ num | name | num | value
+-----+------+-----+-------
+   1 | a    |   1 | xxx
+   2 | b    |     |
+   3 | c    |   3 | yyy
+     |      |   5 | zzz
+(4 rows)
+</pre>
+</ul>
+Vous voilà fin prêt pour utiliser les scripts PerlMSI créant des bases PostgreSQL !
+<p>&nbsp;</p><hr /><p>&nbsp;</p>
+<b>Quelques trucs de formattage de fichiers texte</b>
+<p>Les fichiers CSV sont pratiques, mais parfois il faut les retravailler... Ces quelques astuces devraient vous faire gagner du temps !
+<ul>
+<li>RegExp avec l'éditeur VI</li>
+<pre>
+Pour convertir le fichier csv en csv avec decimal-separator=.
+:%s/\("\d\+\),/\1./g
+
+S'il est sans guillemets:
+:%s/\(;\d\+\),/\1./g
+
+Pour supprimer les guillemets autour des nombres
+:%s/;"\(\d\+\)";/;\1;/g
+
+Pour supprimer les 0 après le point
+:%s/\(\d\+\).00/\1/g
+
+Pour recoder la date européenne (jour, mois, année) en date iso (année, mois, jour)
+:%s/\(\d\d\)\/\(\d\d\)\/\(\d\d\d\d\)/\3-\2-\1/g
+</pre>
+<li>Transcodage avec le programme iconv
+<pre>
+Format des accents : (possibilité de mettre US ASCII aussi)
+iconv -f CP1251 -t US -c  in > out
+
+Format des dates
+iconv -f CP1251 -t US -c  in > out
+</pre>
+<li>Import/Export dans PostGreSQL de fichiers CSV</li>
+<pre>
+Pour importer les csv dans une table
+copy table from '/tmp/fichier.csv' delimiters ',' CSV
+
+Pour exporter une table dans un CSV
+\copy table to '/tmp/fichier.csv' delimiters ';'
+
+Bien sur, on peut choisir son délimiteur - ici la virgule ou le point virgule.
+
+Il faut créer une table avant d'y importer un fichier.
+
+Pour cela, n ommer et typer les colonnes:
+create table cmd (cmd_code_pk smallint, cmd_lib char(255), cmd_ver char(5);
+create table diag (diag_code_pk char(10) PRIMARY KEY, diag_lib char(255), diag_ver);
+</pre>
+<li>Indexer une base</li>
+<pre>
+Pour accélérer les accès, indexer les colonnes de croisements:
+
+create index rss_2007_ghm_idx on rss_2007(ghm);
+
+Pour supprimer les index, on fait comme pour les séquences :
+
+delete index rss_2007_ghm_idx;
+
+Pour supprimer une table avec ses index et séquences:
+
+drop table rss_2007 cascade; 
+</pre>
+<li>Pour vérifier le bon chargement d'un RSS</li>
+<p>
+Décompter par année le nombre d'IEP uniques, de RSS uniques, et de RUM:
+<p>
+select annee, count(distinct iep) as iep, count(distinct rss) as rss, count(rss) as rum<br>
+from (select iep, rss, uf,  extract (year from date_debut_hospit) as annee from a_sejour)<br>
+as subref group by annee;
+</ul>
+À vous d'utiliser les scripts PerlMSI, par exemple <a href="telechargement.html#rss2sql">RSS2SQL</a>, pour vous entrainer maintenant!	 
+<p>&nbsp;</p><hr /><p>&nbsp;</p>
+<b>Les variables en Perl</b>
+<pre>
+1. Les types
+
+$scalar ="Hello World !\n";
+@array = (1, 2, 3);
+%hash   = ("laurel" => "hardy", "nick" =>  "nora", "nick" => "nolte");
+# nick key is overwritten by nolte
+
+1.1. Accéder aux différents types
+
+print $scalar;
+print "@array"; # 123
+print %hash; # laurelhardynicknolte
+print keys(%hash); # laurelnick
+print values(%hash); # hardynolte
+
+1.2. Les résultats dépendent du contexte d'accès
+
+print $hash{nick}; # nolte : $ pour avoir la valeur, { pour dire la clef
+print @array; # 3 because car il y a 3 éléments, et l'accès de print est scalar
+my $size=scalar(@array); # ici on stocke 3
+my @copy_array=@array; # ici on stocke (1, 2, 3)
+
+$,=","; # Définition d'un séparateur pour faire joli
+print %hash; # laurel,hardy,nick,nolte
+
+1.2. Références symboliques:
+
+$whattoprint = 'scalar';
+print ${$whattoprint};
+$name = "bam";
+$$name = 1;                # Stocke 1 dans $bam
+$name->[0] = 4;            # Stocle le premier élément de @bam
+$name->{X} = "Y";          # Le X ième élément de %bam sera Y
+@$name = ();               # Vide @bam
+keys %$name;               # Donne les keys %bam
+&$name;                    # Appele &bam
+
+1.3. Références symboliques risquées
+
+Utiliser plutôt « use strict 'refs'; »
+
+${identifier};    # Comme $identifier, avec lexical scoping
+${"identifier"};  # Comme $identifier, mais avec une référence symbolique
+
+1.4. Lexical scoping
+
+Il est possible de ne pas toucher aux variables globales si l'on a besoin
+dans une fonction de variables locales ayant le même nom.
+
+Mieux: on peut accéder quand même aux variables globales !
+
+our $value  = "global";
+{
+    my $value = "private";
+    print "Inside, mine is ${value}, ";
+    print "but ours is ${'value'}.\n";
+}
+print "Outside, ${value} is again ${'value'}.\n";
+
+2. Créer des références avec le backslash:
+
+$scalarreference = \$scalar;
+$arrayreference = \@array;
+$hashreference = \%hash;
+$codereference = \&subroutine;
+$filereference = \*STDOUT;
+
+2.1. Créer une référence à un scalar avec un backslash
+
+$tenreference = \10;
+$helloworldreference = \"hello world";
+
+2.2. Créer une référence à un scalar situé dans un hash ou un array
+
+$arrayfirstelementreference = \$array[1];
+$hashlaurelkeyreference  = \$hash{"laurel"};
+                                  
+3. Déréférencer pour accéder au contenu
+
+Tout celà sont des scalar :
+
+$$scalarreference; # hello world
+$$arrayreference; # (1, 2, 3)
+$$hashreference;
+$$codereference;
+$$filereference;
+
+3.1. Accéder aux référence de hash ou de arrays
+
+On peut utiliser des scalar :
+
+print $array[2]; # 3
+print $$arrayreference[2]; # 3
+print ${ $arrayreference}[2];
+print $arrayreference->[2];
+
+print $hash{"laurel"};
+print $$hashreference{"laurel"};
+print ${ $hashreference} {"laurel"};
+print $hashreference->{"laurel"};
+
+3.2. Modifier des références de hash ou de arrays
+
+On ne peut pas utiliser des scalar, on doit retyper :
+
+push (@$arrayreference, 4);  # Utilise indirectement la reférence à l'array
+
+4. Créer des références à des types anonymes
+
+D'abord, utiliser [{ au lieu de ( pour le contenu initial
+Ensuite, le type sera un $ scalar car il s'agit d'une reference, non d'un % hash
+
+@some_array = (1, 2, 3);
+$reference_anonymous_array = [1, 2, 3];
+
+%some_hash= ('alpha' => 1, 'beta' => 2, 'gamma' => 3);
+$reference_anonymous_hash = {'alpha' => 1, 'beta' => 2, 'gamma' => 3};
+	
+my $sub_ref = sub { print "In a subroutine\n" };
+</pre>
+					 </div>
+			
+			</div>
+		</div>
+		
+	</body>
+
+</html>

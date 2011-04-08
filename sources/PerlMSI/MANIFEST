@@ -1,0 +1,6 @@
+Changes
+Makefile.PL
+MANIFEST
+README
+t/PerlMSI-RSS.t
+lib/PerlMSI/RSS.pm

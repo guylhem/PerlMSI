@@ -1,0 +1,2 @@
+R CMD INSTALL  --configure-args='--with-in-perl' RSPerl
+export PERL5LIB=/Library/Frameworks/R.framework/Resources/library/RSPerl/perl

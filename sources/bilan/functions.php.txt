@@ -1,0 +1,548 @@
+<?php
+//    Copyright (C) 2008, Guylhem
+//
+//    This program is free software: you can redistribute it and/or
+//    modify
+//    it under the terms of the GNU Affero General Public License as
+//    published by the Free Software Foundation, either version 3 of the
+//    License, or (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU Affero General Public License for more details.
+//
+//    You should have received a copy of the GNU Affero General Public
+//    License
+//    along with this program.  If not, see
+//    <http://www.gnu.org/licenses/>.
+
+/**
+* Port of Sedgewick & Wayne's Longest Common Subsequence algorithm 
+* found here:
+*
+* @see http://www.cs.princeton.edu/introcs/96optimization/LCS.java.html
+* @see http://www.cs.princeton.edu/introcs/96optimization/
+*
+* @author Paul Meagher
+* @ported Feb 21, 2008
+*
+* See also:
+*
+* @see http://www.ics.uci.edu/~eppstein/161/960229.html
+*
+* @param string $S1 first string 
+* @param string $S2 second string 
+* @returns string containing common subsequence or empty string
+*/
+function string_lcs($S1, $S2) {
+
+  $m = strlen($S1);
+  $n = strlen($S2);
+
+  // A[i][j] = length of LCS of S1[i..m] and S2[j..n]
+  $A = array();
+
+  // compute length of LCS and all subproblems via dynamic programming
+  for ($i = $m-1; $i >= 0; $i--) {
+    for ($j = $n-1; $j >= 0; $j--) {
+      if ($S1[$i] == $S2[$j])
+        $A[$i][$j] = $A[$i+1][$j+1] + 1;
+      else 
+        $A[$i][$j] = max($A[$i+1][$j], $A[$i][$j+1]);
+    }
+  }
+
+  // recover LCS itself and print it to standard output
+  $i = 0;
+  $j = 0;
+  $LCS = "";
+  while($i < $m && $j < $n) {
+    if ($S1[$i] == $S2[$j]) {
+      $LCS .= $S1[$i];
+      $i++;
+      $j++;
+    } elseif ($A[$i+1][$j] >= $A[$i][$j+1]) 
+      $i++;
+    else                                 
+      $j++;
+  }
+  
+  return $LCS;
+
+}
+
+function GetVal($name) {
+// Offre une compatibilité des différentes versions php pour obtenir les
+// valeurs soumises au formulaire. Peut faire pareil avec s/GET/POST/g
+if ($_GET[$name]) return($_GET[$name]);
+else if ($_GET_VARS[$name]) return($_GET_VARS[$name]);
+else if ($HTTP_GET_VARS[$name]) return($HTTP_GET_VARS[$name]);
+}
+
+function myescapetooltip ($unclean_string) {
+// Vire certains codes HTML
+$unclean_array=array("\"", "'", "<", ">", "\n");
+$clean_array = array("''", "\'", "inf.", "sup.", "<br>");
+return (str_replace($unclean_array, $clean_array, $unclean_string));
+}
+
+// Retourne le nombre de résultats de la requête, et au maximum 5 tableaux
+// Si create_table=0, retourne des chaîne (_c)
+// Si create_table=1, retourne des listes (_l)
+// Si create_table=2, le premier argument retourné par la requête sert
+// de paramètre à tous les tableaux créés
+// Si create_table=3, idem mais ne concatène pas
+// Si create_table=4, idem mais pour le 1e tableau, fait un
+// array_unique:
+// 1
+// 1
+// 2
+// 5
+// 6
+// 2
+// devient
+// 1|1
+// 2|2
+// 3|5
+// 4|6
+// Si 5, concatène pas les 2e tableau, mais tous les autres
+//
+// Si la variable globale debug=1, fait aussi un explain analyse pour
+// évaluer la durée de la requête, et stocke les resultats dans un
+// tableau debug_query[ordre, requete, duree].
+
+function pget($query, $create_table, &$array0, &$array1, &$array2, &$array3, &$array4, &$array5, &$array6) {
+// Si on passe 5 arguments, les 3 derniers sont des tableaux (premier=0)
+$array_nbr=func_num_args()-2;
+
+// S'il n'y a même pas de requête, on s'arrête là
+if ($array_nbr == -2) return;
+
+// Debug
+//echo $query;
+//echo "<hr>";
+
+// On exécute
+$result = pg_exec($query) or die('Échec requête : ' . pg_ErrorMessage());
+$result_nbr=pg_numrows($result);
+
+// La première ligne est vide
+$result_cur=$result_nbr-1;
+
+// Puis on voit que faire selon la demande
+while ($result_cur >= 0) {
+ $result_row = pg_fetch_array($result, $result_cur);
+
+// Pas joli mais func_get_arg ne référence pas (pas de &func_get_arg)
+// et faire des ifs ferait soit trop d'imbrications, soit trop de tests
+// ce qui serait peut être moins optimisé... faisons donc simple et lisible
+ switch ($array_nbr) {
+   case -1: // pas de create table:  retourne simplement le 1e résultat
+     $array0 = $result_row[0];
+     break; // array_nbr == -1
+   case 0: // un seul array
+     switch ($create_table) {
+       case 0:
+       $array0 = $result_row[0];
+       break;
+
+       case 1:
+       $array0[$result_cur] = $result_row[0];
+       break;
+
+       case 2:
+       // si existe déjà, concatène - utile par exemple pour
+       // indic_comment_t : plusieurs commentaires pour une indication.
+       $array0[$result_row[0]] .= $result_row[1] . "  ";
+       break;
+
+       case 3:
+       if ($result_row[1])
+       $array0[$result_row[0]] = $result_row[1];
+       break;
+
+       case 4:
+       $array_temp[$result_cur] = $result_row[0];
+       break;
+
+       case 5:
+       $array_temp[$result_cur] = $result_row[0];
+       break;
+     } // switch create_table
+     break; // array_nbr == 0
+   case 1:
+     switch ($create_table) {
+       case 0:
+       $array0 = $result_row[0];
+       $array1 = $result_row[1];
+       break;
+
+       case 1:
+       $array0[$result_cur] = $result_row[0];
+       $array1[$result_cur] = $result_row[1];
+       break;
+
+       case 2:
+       $array0[$result_row[0]] .= $result_row[1] . "  ";
+       $array1[$result_row[0]] .= $result_row[2] . "  ";
+       break;
+
+       case 3:
+       if ($result_row[1])
+       $array0[$result_row[0]] = $result_row[1];
+       if ($result_row[2])
+       $array1[$result_row[0]] = $result_row[2];
+       break;
+
+       case 4:
+       $array_temp[$result_cur] = $result_row[0];
+       if ($result_row[2])
+       $array1[$result_row[0]] = $result_row[1];
+       
+       case 5:
+       $array_temp[$result_cur] = $result_row[0];
+       if ($result_row[2])
+       $array1[$result_row[0]] = $result_row[1];
+       break;
+     } // switch create_table
+     break; // array_nbr == 1
+   case 2:
+     switch ($create_table) {
+       case 0:
+       $array0 = $result_row[0];
+       $array1 = $result_row[1];
+       $array2 = $result_row[2];
+       break;
+
+       case 1:
+       $array0[$result_cur] = $result_row[0];
+       $array1[$result_cur] = $result_row[1];
+       $array2[$result_cur] = $result_row[2];
+       break;
+
+       case 2:
+       $array0[$result_row[0]] .= $result_row[1] . "  ";
+       $array1[$result_row[0]] .= $result_row[2] . "  ";
+       $array2[$result_row[0]] .= $result_row[3] . "  ";
+       break;
+
+       case 3:
+       if ($result_row[1])
+       $array0[$result_row[0]] = $result_row[1];
+       if ($result_row[2])
+       $array1[$result_row[0]] = $result_row[2];
+       if ($result_row[3])
+       $array2[$result_row[0]] = $result_row[3];
+       break;
+
+       case 4:
+       $array_temp[$result_cur] = $result_row[0];
+       if ($result_row[2])
+       $array1[$result_row[0]] = $result_row[2];
+       if ($result_row[3])
+       $array2[$result_row[0]] = $result_row[3];
+       break;
+       
+       case 5:
+       $array_temp[$result_cur] = $result_row[0];
+       if ($result_row[2])
+       $array1[$result_row[0]] = $result_row[2];
+       if ($result_row[3])
+       $array2[$result_row[0]] .= $result_row[3] . " + ";
+       break;
+     } // switch create_table
+     break;  // array_nbr == 2
+   case 3:
+     switch ($create_table) {
+       case 0:
+       $array0 = $result_row[0];
+       $array1 = $result_row[1];
+       $array2 = $result_row[2];
+       $array3 = $result_row[3];
+       break;
+
+       case 1:
+       $array0[$result_cur] = $result_row[0];
+       $array1[$result_cur] = $result_row[1];
+       $array2[$result_cur] = $result_row[2];
+       $array3[$result_cur] = $result_row[3];
+       break;
+
+       case 2:
+       $array0[$result_row[0]] .= $result_row[1] . "  ";
+       $array1[$result_row[0]] .= $result_row[2] . "  ";
+       $array2[$result_row[0]] .= $result_row[3] . "  ";
+       $array3[$result_row[0]] .= $result_row[4] . "  ";
+       break;
+
+       case 3:
+       if ($result_row[1])
+       $array0[$result_row[0]] = $result_row[1];
+       if ($result_row[2])
+       $array1[$result_row[0]] = $result_row[2];
+       if ($result_row[3])
+       $array2[$result_row[0]] = $result_row[3];
+       if ($result_row[4])
+       $array3[$result_row[0]] = $result_row[4];
+       break;
+
+       case 4:
+       $array_temp[$result_cur] = $result_row[0];
+       if ($result_row[2])
+       $array1[$result_row[0]] = $result_row[2];
+       if ($result_row[3])
+       $array2[$result_row[0]] = $result_row[3];
+       if ($result_row[4])
+       $array3[$result_row[0]] = $result_row[4];
+       break;
+       
+       case 5:
+       $array_temp[$result_cur] = $result_row[0];
+       if ($result_row[2])
+       $array1[$result_row[0]] = $result_row[2];
+       if ($result_row[3])
+       $array2[$result_row[0]] .= $result_row[3] . " + ";
+       if ($result_row[4])
+       $array3[$result_row[0]] .= $result_row[4] . " + ";
+       break;
+     } // switch create_table
+     break;  // array_nbr == 3
+   case 4:
+     switch ($create_table) {
+       case 0:
+       $array0 = $result_row[0];
+       $array1 = $result_row[1];
+       $array2 = $result_row[2];
+       $array3 = $result_row[3];
+       $array4 = $result_row[4];
+       break;
+
+       case 1:
+       $array0[$result_cur] = $result_row[0];
+       $array1[$result_cur] = $result_row[1];
+       $array2[$result_cur] = $result_row[2];
+       $array3[$result_cur] = $result_row[3];
+       $array4[$result_cur] = $result_row[4];
+       break;
+
+       case 2:
+       $array0[$result_row[0]] .= $result_row[1] . "  ";
+       $array1[$result_row[0]] .= $result_row[2] . "  ";
+       $array2[$result_row[0]] .= $result_row[3] . "  ";
+       $array3[$result_row[0]] .= $result_row[4] . "  ";
+       $array4[$result_row[0]] .= $result_row[5] . "  ";
+       break;
+
+       case 3:
+       if ($result_row[1])
+       $array0[$result_row[0]] = $result_row[1];
+       if ($result_row[2])
+       $array1[$result_row[0]] = $result_row[2];
+       if ($result_row[3])
+       $array2[$result_row[0]] = $result_row[3];
+       if ($result_row[4])
+       $array3[$result_row[0]] = $result_row[4];
+       if ($result_row[5])
+       $array4[$result_row[0]] = $result_row[5];
+       break;
+
+       case 4:
+       $array_temp[$result_cur] = $result_row[0];
+       if ($result_row[2])
+       $array1[$result_row[0]] = $result_row[2];
+       if ($result_row[3])
+       $array2[$result_row[0]] = $result_row[3];
+       if ($result_row[4])
+       $array3[$result_row[0]] = $result_row[4];
+       if ($result_row[5])
+       $array4[$result_row[0]] = $result_row[5];
+       break;
+
+       case 5:
+       $array_temp[$result_cur] = $result_row[0];
+       if ($result_row[2])
+       $array1[$result_row[0]] = $result_row[2];
+       if ($result_row[3])
+       $array2[$result_row[0]] .= $result_row[3] . " + ";
+       if ($result_row[4])
+       $array3[$result_row[0]] .= $result_row[4] . " + ";
+       if ($result_row[5])
+       $array4[$result_row[0]] .= $result_row[5] . " + ";
+       break;
+     } // switch create_table
+     break;  // array_nbr == 4
+  case 5:
+     switch ($create_table) {
+       case 0:
+       $array0 = $result_row[0];
+       $array1 = $result_row[1];
+       $array2 = $result_row[2];
+       $array3 = $result_row[3];
+       $array4 = $result_row[4];
+       $array5 = $result_row[5];
+       break;
+
+       case 1:
+       $array0[$result_cur] = $result_row[0];
+       $array1[$result_cur] = $result_row[1];
+       $array2[$result_cur] = $result_row[2];
+       $array3[$result_cur] = $result_row[3];
+       $array4[$result_cur] = $result_row[4];
+       $array5[$result_cur] = $result_row[5];
+       break;
+
+       case 2:
+       $array0[$result_row[0]] .= $result_row[1] . "  ";
+       $array1[$result_row[0]] .= $result_row[2] . "  ";
+       $array2[$result_row[0]] .= $result_row[3] . "  ";
+       $array3[$result_row[0]] .= $result_row[4] . "  ";
+       $array4[$result_row[0]] .= $result_row[5] . "  ";
+       $array5[$result_row[0]] .= $result_row[6] . "  ";
+       break;
+
+       case 3:
+       if ($result_row[1])
+       $array0[$result_row[0]] = $result_row[1];
+       if ($result_row[2])
+       $array1[$result_row[0]] = $result_row[2];
+       if ($result_row[3])
+       $array2[$result_row[0]] = $result_row[3];
+       if ($result_row[4])
+       $array3[$result_row[0]] = $result_row[4];
+       if ($result_row[5])
+       $array4[$result_row[0]] = $result_row[5];
+       if ($result_row[6])
+       $array5[$result_row[0]] = $result_row[6];
+       break;
+
+       case 4:
+       $array_temp[$result_cur] = $result_row[0];
+       if ($result_row[2])
+       $array1[$result_row[0]] = $result_row[2];
+       if ($result_row[3])
+       $array2[$result_row[0]] = $result_row[3];
+       if ($result_row[4])
+       $array3[$result_row[0]] = $result_row[4];
+       if ($result_row[5])
+       $array4[$result_row[0]] = $result_row[5];
+       if ($result_row[6])
+       $array5[$result_row[0]] = $result_row[6];
+       break;
+
+       case 5:
+       $array_temp[$result_cur] = $result_row[0];
+       if ($result_row[2])
+       $array1[$result_row[0]] = $result_row[2];
+       if ($result_row[3])
+       $array2[$result_row[0]] .= $result_row[3] . " + ";
+       if ($result_row[4])
+       $array3[$result_row[0]] .= $result_row[4] . " + ";
+       if ($result_row[5])
+       $array4[$result_row[0]] .= $result_row[5] . " + ";
+       if ($result_row[6])
+       $array5[$result_row[0]] .= $result_row[6] . " + ";
+       break;
+     } // switch create_table
+     break; // array_nbr==5
+  case 6:
+     switch ($create_table) {
+       case 0:
+       $array0 = $result_row[0];
+       $array1 = $result_row[1];
+       $array2 = $result_row[2];
+       $array3 = $result_row[3];
+       $array4 = $result_row[4];
+       $array5 = $result_row[5];
+       $array6 = $result_row[6];
+       break;
+
+       case 1:
+       $array0[$result_cur] = $result_row[0];
+       $array1[$result_cur] = $result_row[1];
+       $array2[$result_cur] = $result_row[2];
+       $array3[$result_cur] = $result_row[3];
+       $array4[$result_cur] = $result_row[4];
+       $array5[$result_cur] = $result_row[5];
+       $array6[$result_cur] = $result_row[6];
+       break;
+
+       case 2:
+       $array0[$result_row[0]] .= $result_row[1] . "  ";
+       $array1[$result_row[0]] .= $result_row[2] . "  ";
+       $array2[$result_row[0]] .= $result_row[3] . "  ";
+       $array3[$result_row[0]] .= $result_row[4] . "  ";
+       $array4[$result_row[0]] .= $result_row[5] . "  ";
+       $array5[$result_row[0]] .= $result_row[6] . "  ";
+       $array6[$result_row[0]] .= $result_row[7] . "  ";
+       break;
+
+       case 3:
+       if ($result_row[1])
+       $array0[$result_row[0]] = $result_row[1];
+       if ($result_row[2])
+       $array1[$result_row[0]] = $result_row[2];
+       if ($result_row[3])
+       $array2[$result_row[0]] = $result_row[3];
+       if ($result_row[4])
+       $array3[$result_row[0]] = $result_row[4];
+       if ($result_row[5])
+       $array4[$result_row[0]] = $result_row[5];
+       if ($result_row[6])
+       $array5[$result_row[0]] = $result_row[6];
+       if ($result_row[7])
+       $array6[$result_row[0]] = $result_row[7];
+       break;
+
+       case 4:
+       $array_temp[$result_cur] = $result_row[0];
+       if ($result_row[2])
+       $array1[$result_row[0]] = $result_row[2];
+       if ($result_row[3])
+       $array2[$result_row[0]] = $result_row[3];
+       if ($result_row[4])
+       $array3[$result_row[0]] = $result_row[4];
+       if ($result_row[5])
+       $array4[$result_row[0]] = $result_row[5];
+       if ($result_row[6])
+       $array5[$result_row[0]] = $result_row[6];
+       if ($result_row[7])
+       $array6[$result_row[0]] = $result_row[7];
+       break;
+
+       case 5:
+       $array_temp[$result_cur] = $result_row[0];
+       if ($result_row[2])
+       $array1[$result_row[0]] = $result_row[2];
+       if ($result_row[3])
+       $array2[$result_row[0]] .= $result_row[3] . " + ";
+       if ($result_row[4])
+       $array3[$result_row[0]] .= $result_row[4] . " + ";
+       if ($result_row[5])
+       $array4[$result_row[0]] .= $result_row[5] . " + ";
+       if ($result_row[6])
+       $array5[$result_row[0]] .= $result_row[6] . " + ";
+       if ($result_row[7])
+       $array7[$result_row[0]] .= $result_row[7] . " + ";
+       break;
+     } // switch create_table
+     break; // array_nbr==6
+  } // switch array_nbr;
+ $result_cur--;
+ } // while result_cur
+pg_freeresult($result);
+
+// fait un array_unique sur la première table avant de la rendre.
+if ($create_table >= 4) 
+ $array0=array_unique($array_temp);
+
+if ($array_nbr == -1) return $array0;  // retourne le seul resultat
+if ($create_table > 0) return $result_nbr; // dans tous les autres cas, on retourne les tables référencées
+if ($create_table == 0) return $array0;  // retourne le seul resultat
+} // function pget
+
+function beginsWith($str, $sub) {    return (strncmp($str, $sub, strlen($sub)) == 0);}
+
+function endsWith( $str, $sub ) {   return ( substr( $str, strlen( $str ) - strlen( $sub ) ) == $sub );}
+
+?>

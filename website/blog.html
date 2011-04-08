@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--this design was created by Vacant (Chris Blunden), http://www.web-site.tk             
+Deep, version 1.5 created on 17/10/04 for OSWD.org - DO NOT REMOVE this notice. Thanks. -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<title>Le PMSI avec PERL et Postgres SQL et R et ...</title>
+	<link rel="stylesheet" type="text/css" href="style.css" />
+	</head>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ?
+"https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost +
+"google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-16049862-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+	<body>
+				<div class="bgtextpage">PerlMSI</div>	
+				<div id="textpage">
+				<a href="presentation.html">pr&eacute;sentation</a><p>
+				<div id="currentpage">blog</div><p>
+				<a href="archives.html">archives</a><p>
+				<a href="references.html">références</a><p>
+				<a href="copyright-fr.html">copyrights</a><p>
+				<a href="telecharger.html">télécharger</a><p>
+				<a href="mailto:perlmsi@googlegroups.com">contact</a><p>
+				</div>
+
+		<div id="outer">
+			<div id="inner">
+			
+	
+			
+				 <div id="subbgtext">Le PMSI avec PERL et Postgres SQL et R et ...</div>
+				 	  
+					  <div id="content">
+					  	   <a name="top"></a> <!-- very important! this is the anchor for the back to top feature. Remove it at your own risk! :P -->
+<b>Relier les RSA aux RSS</b>
+<p>Il est souvent nécessaire de relier les RSA aux RSS, ne serait-ce que pour pouvoir croiser les information tarifaires plus riches dans les RSA (suppléments, etc) aux informations administratives plus riches dans les RSS (car non anonymisées !).
+<p>
+Pour celà, on peut soit passer par l'ANOHOSP, méthode complexe et surtout ne permettant pas de relier un RSA à des informations précises, soit préférer utiliser les « portes dérobées » laissées par l'ATIH dans GENRSA à destination des contrôles de sécurité sociale.
+<p>
+On vous l'a bien dit, vous devez conserver les fichier in.zip et out.zip pour les contrôles externes. Mais avez-vous regardé de prêt de qu'ils contiennent ?
+<p>
+Prenez-donc 5 minutes pour extraire le fichier out.zip, c'est à dire les RSA, et regarder le fichier tra.txt : vous allez y découvrir des informations très intéressantes... et notamment l'association numéro de RSS, numéro de RSA et IEP, en texte clair, suivi de la date et du GHM.
+<p>
+Le out.zip n'est donc pas si anonyme que ça : il contient l'IEP à partir duquel le contrôle pourra avoir lieu. Ce pourrait aussi être une vulnérabilité pour remonter à des informations nominatives à partir de données théoriquement « anonymisées » PMSI s'il était transmis par epop... une possibilité qu'il n'est pas possible d'écarter pour l'instant, à moins de vérifier dans le code source de epop ce qu'il transmet (je n'ai pas ce code source!).
+<p>
+Toutefois, pour nos opérations de croisements nécessaires à des calculs plus précis, c'est une aide : une fois le RSS chargé et le RSA chargé, utilisez-donc l'outil <a href="sources/tra2sql/">TRA2SQL</a> pour avoir une base vous permettant de croiser RSS et RSA. Vos calculs seront bien plus simple... vous pourrez même vous passer du RSS : le RSA contient déjà la plupart des informations intéressantes, sauf les dates et l'identité du patient. Mais avec l'IEP, vous pouvez toujours consulter les bases administratives... et le problème est réglé.
+<p>&nbsp;</p><hr /><p>&nbsp;</p>
+<b>À quoi bon chercher un format pivot ?</b>
+<p>Après avoir eu plusieurs échanges avec des collègues qui cherchent à traiter des données PMSI, j'ai constaté un point qui revient fréquemment dans nos discussions : la « nécessité » d'un format pivot. La discussion tourne court, lorsque j'essaye de donner les raisons pour lesquelles on ne devrait pas s'occuper d'un format pivot. L'idée est bien engraînée - sans doute vu l'ubiquité et l'utilisé des formats pivots dans tous les autres domaines.
+<p>
+Mais pour commencer, les formats PMSI évoluent beaucoup - certes moins qu'il y a quelques années, mais malgré tout à un rythme soutenu. Pour beaucoup de défenseurs du « format pivot », la solution la plus simple est de considérer tous les champs ayant existé au moins une fois depuis le début de la T2A, et les rajouter à la queue-le-leu dans un format segmenté quelconque du genre CSV, ou alors en tant que colonnes dans une base SQL.
+<p>
+La difficulté de cette approche est qu'elle complexifie beaucoup la gestion des données, les anciens champs défunts depuis plusieurs années venant masquer la lisibilité des champs actuels en cours d'utilisation... et donc bien plus importants.
+<p>
+De plus, cette approche conservatrice ne segmente pas les données par intérêt. Soyons franc - tous les champs n'ont pas le même intérêt. Pour des données anciennes, conserver les dates de mutation des patients, les UF correspondantes, les diagnostics reçus (séparés par type: DP, DR, DAS, DAD), les actes pratiques (avec leur date, phase, extension...) suffit à répondre à la plupart des interrogation sur l'activité des services et leur évolution.
+<p>
+Cette approche minimaliste m'a guidée vers une approche orientée objet : oui à la complexité liée au champs désuets, si elle est encapsulée par des méthodes d'abtraction qui permettent de ne pas avoir à s'en soucier ! Cette épiphanie m'a fait cesser le développement de scripts gérant un ensemble de formats pour intégrer leurs fonctions de manière différente, « orientée objet ». Il s'agit de l'approche retenue dans la <a href="telecharger.html#bibliotheque_perlmsi">bibliothèque PerlMSI</a> : un objet RSS est créé à partir d'un fichier. Il est possible d'accéder à son contenu sous forme de colonne pour faire sa propre cuisine, ou de se contenter des fonctions d'accès <i>(bien sur, il aurait été possible d'obtenir un résultat proche en conservant les scripts existants et en se recentrant sur des fonctions plsql, mais la lourdeur imposée par les bases SQL devenait de plus génante, et m'a conduit à les considérer comme une simple sortie potentielle pour des manipulations spécifiques, et non le passage imposé du traitement de données)</i>.
+<p>
+Les abstractions sont préférables pour leur simplicité, mais surtout car elles laissent l'interprétation des différences de format à l'implémenteur. Par exemple, un fichier RSS de 2004 ne renseignait pas l'IEP correspondant à un RSS. Un objet RSS créé à partir d'un fichier RSS de 2004 ne sait donc pas lister les IEP distincts qu'il contient, alors que ce même objet créé par un fichier RSS plus récent aura cette possibilité. Toutefois, si l'objet RSS de 2004 peut acquérir cette information, par exemple en le croisant à un autre objet créé à partir d'un autre fichier, cette possibilité et les calculs qui vont avec sera offerte.
+<p>
+À mon avis, il s'agit de la bonne approche, car elle permet de laisser le choix de la complexité à l'implémenteur des méthodes de ces objets : si tel champ (ex: IEP) a une importance suffisante, une méthode supplémentaire pour gérer les cas où l'absence de champs pose problème sera proposée. Si le champs est très secondaire et désuet, aucun besoin de perdre du temps à implémenter une méthode qui sera utilisée par un faible pourcentage des utilisateurs. Ces derniers pourront toujours accéder au contenu intégral de l'objet pour faire leur propre cuisine. La loi du marché à l'oeuvre...
+<p>
+C'est un peu de cette manière que je vois le format pivot : inutile voire dangereux, car obligeant de gérer de très rares recettes de cuisine au détriment des cas d'utilisation les plus fréquents. Une approche objet laisse suffisamment de souplesse pour traiter de manière différente les besoins les plus fréquents, de ceux les plus rares.
+					 </div>
+			
+			</div>
+		</div>
+		
+	</body>
+
+</html>

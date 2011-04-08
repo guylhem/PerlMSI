@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--this design was created by Vacant (Chris Blunden), http://www.web-site.tk             
+Deep, version 1.5 created on 17/10/04 for OSWD.org - DO NOT REMOVE this notice. Thanks. -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />	
+	<title>Le PMSI avec PERL et Postgres SQL et R et ...</title>
+	<link rel="stylesheet" type="text/css" href="style.css" />
+	</head>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ?
+"https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost +
+"google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-16049862-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+	<body>
+				<div class="bgtextpage">PerlMSI</div>	
+				<div id="textpage">
+				<a href="presentation.html">pr&eacute;sentation</a><p>
+				<a href="archives.html">archives</a><p>
+				<a href="blog.html">blog</a><p>
+				<a href="liens.html">liens</a><p>
+				<a href="copyright-fr.html">copyrights</a><p>
+				<div id="currentpage">télécharger</div><p>
+				<a href="mailto:perlmsi@googlegroups.com">contact</a><p>
+				</div>
+
+		<div id="outer">
+			<div id="inner">
+			
+	
+			
+				 <div id="subbgtext">Le PMSI avec PERL et Postgres SQL et R et ...</div>
+				 	  
+					  <div id="content">
+					  	   <a name="top"></a> <!-- very important! this is the anchor for the back to top feature. Remove it at your own risk! :P -->
+<b>Rappel important</b>
+<p>Tous les programmes ci-présent sont distribués sous licence AGPL v3.
+Vous pouvez les utiliser gratuitement, on espère qu'ils fonctionnent bien, mais il n'y a aucune certitude...
+Considérez-les donc comme des bases de travail pour vos informaticiens ! À ce titre, toutes les versions sont
+conservées, pour faciliter l'étude de l'évolution de leurs fonctionnalités.</p>
+<b>Réservé aux connaisseurs !</b>
+<p>Vous constaterez aussi que la plupart de ces programmes ne fonctionnent qu'en ligne de commande. Il n'y a dans cette décision aucune volonté élitiste : l'interface graphique <i>(souvent dite « clicodrôme »)</i> n'aurait que peu d'intérêt vu le public visé, notre priorité allant à la réalisation de programmes fonctionnels pour les professionels du secteur. Toutefois, si vous maitrisez Gtk2Perl souhaitez nous aider dans cette approche, n'hésitez pas à nous contacter.</p>
+<b>Des besoins spécifiques ?</b>
+<p>Si malgré tout vous avez des besoins très spécifiques, qui nécessitent par exemple un développement particulier, le mieux est de nous contacter pour que l'on puisse étudier votre projet.</p>
+<b>Assez discuté ! Je veux ces programmes !</b>
+<p><a href="sources/">Vous pouvez vous servir</a>, mais pensez à lire les explications ci-dessous, surtout pour des programmes à l'utilisation aussi spécifique que RSSDIFF2RSS.</p> 
+<p>&nbsp;</p><hr /><p>&nbsp;</p>
+<b><a href="sources/rss2sql/">RSS2SQL</a> et <a href="sources/sql2rss/">SQL2RSS</a></b>
+<p>Ces deux scripts permettent de rentrer et de sortir un fichier RSS
+dans une base PostGreSQL. Leur intérêt principal est de faire des
+analyses statistiques (ex: il est très facile à partir d'une base SQL de décompter
+les patients par UF et par sexe) et de croiser des informations issues
+de systèmes ne se parlant pas (ex: pour tester l'intérêt de déverser
+dans le RSS les actes issus d'un logiciel spécifique à un service).
+Tous les formats de RSS depuis 2004 sont gérés.</p>
+<b><a href="sources/greprss/">GREPRSS</a></b>
+<p>Produire tout un fichier RSS à partir de la table SQL générée par
+RSS2SQL est souvent beaucoup trop compliqué pour une tâche simple (ex:
+créer un fichier RSS correspondant aux patients répondant à deux
+critères pour évaluer la valorisation d'un plan de transfert d'activité
+vers un autre établissement par le biais d'une transmission epop M0).
+Il suffit de créer une table SQL contenant le fruit des croisements,
+et GREPRSS utilise cette table pour créer un extrait du fichier RSS à
+partir des numéros de RSS donnés en entrée. Cette opération se fait bien
+plus rapidement que SQL2RSS ne peut générer un fichier complet.</p>
+<b><a href="sources/rsa2sql/">RSA2SQL</a></b>
+<p>Il s'agit du pendant de RSS2SQL, qui permet de charger les RSA dans une base SQL.
+Dans ses premières versions, il a été construit à partir de RSS2SQL mais
+il a évolué spécifiquement, notamment dans la gestion des différents
+formats de RSA. Cette gestion reste sous la forme de bloc après des tests, pour
+faciliter l'adaptation du script par des personnes qui auraient quelques
+difficultés avec des structures plus compliquées telles qu'utilisées dans les autres programmes dont <a href="#bibliotheque_perlmsi">la bibliothèque PerlMSI.</a></p>
+<b><a href="sources/rsa2euro/">RSA2EURO</a></b>
+<p>Ce script permet de créer à partir d'un fichier RSA des bases SQL
+donnant la valeur en euro de chaque RSA, notamment pour le nombre de
+CMD90 et les différences (ex: utiliser ce script suivre l'élimination
+des CMD90 et la progression des gains correspondants). Il chiffre aussi
+les séjours non pris en charge par la CPAM (ex: pour comparer au valeurs
+du titre 2), et indique la répartition de la valorisation entre séjours
+de patients décédés, en deça, entre, et aux delà des bornes en GHMv10.
+Il crée une table de comparaison par rapport au groupage référence, pour
+faciliter l'étude à postériori des étapes de rattrapage. Attention: il
+est très approximatif et nécessite une table d'association IEP/IPP pour
+les calculs par IPP. Il devrait bientôt être remplacé par des fonctions de
+<a href="#bibliotheque_perlmsi">la bibliothèque PerlMSI.</a></p>
+<b><a href="sources/tra2sql/">TRA2SQL</a></b>
+<p>Cet extrait de RSA2EURO se consacre a une seule fonction : charger la
+liste des associations RSA/RSS pour faciliter les croisements entre les
+deux bases SQL, pour que lors d'une utilisation de RSA2SQL et de RSS2SQL,
+il ne faille pas lancer inutilement tout un RSA2EURO (ex: lorsqu'on recherche
+juste la liste des IEP et des RSS ayant eu un certain supplément au GHS).</p>
+<b><a href="sources/bilan/">BILAN.PHP</a></b>
+<p>À l'instar de RSA2EURO, ce script cherche à faire des évaluations.
+Mais alors que RSA2EURO est utile pour suivre les rattrapages de valeur
+lors des corrections de CMD90, bilan.php est surtout destiné à donner
+des informations aux UF à partir du fichier RSS chargé par RSS2SQL. Il
+dépend de fonctions.php, pour une routine d'interrogation de la base de
+donnée retournant différent types de tableaux selon les besoins. Il est très
+basique, notamment d'un point de vue présentation, mais peut être modifié pour
+faire des tableaux de bord par UF ou par pôle.</p>
+<b><a href="sources/vidhospconvert/">VIDHOSPCONVERT</a></b>
+<p>Le fichier VIDHOSP, qui donne l'ANOHOSP, est utilisé par GENRSA pour
+déterminer si un séjour est facturable ou pas à l'assurance maladie. Le
+VIDHOSP dépend de la filière administrative, et a souvent quelques
+petits problèmes, comme des erreurs évidentes sur le numéro de sécurité
+sociale. Il est recommandé dans les forums de l'ATIH de corriger de
+telles erreurs - ce script s'en charge ! Il est aussi capable de convertir
+les formats d'une année à l'autre (ex: pour alimenter un script
+d'analyse statistique qui ne connait pas le nouveau format VIDHOSP).</p>
+<b><a href="sources/vidhosp2txt/">VIDHOSP2TXT</a></b>
+<p>Repérer et corriger les erreurs du VIDHOSP devenant trop compliqué
+pour être fait de manière automatique, il vaut parfois mieux faire un
+rapport de bug à l'éditeur. Pour celà, il faut pouvoir facilement
+décoder les différents champs du fichier VIDHOSP. VIDHOSP2TXT s'en
+charge, en mettant des libellés clair pour chaque valeur. Il supporte
+aussi tous les formats de VIDHOSP, par une nouvelle méthode de tableau
+associatif qui permet d'économiser des boucles (ex: dans RSA2SQL, la
+plupart du contenu se répête) tout en étant simplement modifiable par un
+néophyte pour rajouter de nouveau formats.</p>
+<b><a href="sources/fichcomp2sql/">FICHCOMP2SQL</a></b>
+<p>En MCO, il faut aussi pouvoir décoder les informations sur les molécules
+onéreuses (FICHCOMP-MON) et les dispositifs médicaux (FICHCOMP-DMI), qui sont
+transmises par la pharmacie au DIM. FICHCOMP2SQL est le pendant de RSS2SQL,
+car il permet de les charger dans une base PostGreSQL.</p>
+<b><a href="sources/rssdiff2rss/">RSSDIFF2RSS</a></b>
+<p>Les GHM indiqués par les logiciels de groupage dans le fichier RSS n'ont
+aucune valeur légale, seul GENRSA de l'ATIH étant le logiciel de référence.
+Souvent, il peut exister des différences entre les GHM attribués par votre
+logiciel de codage et les GHM retenus par l'ATIH. (Ex de logiciel de codage:
+Cora de PrisMedica, mais tous les éditeurs sont dans la même situation :
+en cas de divergence, même lié à une erreur dans GENRSA, il est la référence !).
+De telles divergences s'avèrent génantes si vous utilisez des logiciels de
+présentation de résultats utilisant les fichiers RSS, comme PMSI-Pilot de la société PSIH.
+<p>
+Normalement, vous devez utiliser le fichier .rss.txt de l'archive in.zip produite
+par GENRSA, et non le rss.ini.txt correspondant au fichier créé par votre logiciel
+de groupage. Toutefois, il peut être parfois gênant et source d'erreur de devoir
+faire de telles manipulations sur les fichiers .zip qui portent tous des noms
+très proches. (Ex: lors du chargement de corrections sur les mouvements entre
+des UF qui ne modifiront pas le groupage en GHM mais qui changeront les répartitions
+de T2A par UF).
+<p>
+Dans un tel cas, si vous êtes sur que le groupage en GHM produit
+par votre logiciel de groupage continue à manifester des erreurs normalement
+corrigées par GENRSA, prenez le fichier dif de son archive in.zip et le RSS produit
+par votre logiciel de groupage. RSSDIFF2RSS appliquera les corrections recommandées
+par le fichier dif de GENRSA pour corriger le fichier RSS sorti de votre logiciel de
+groupage, sans devoir à chaque fois lancer GENRSA. RSSDIFF2RSS est particulièrement
+utile pour suivre l'avancée de correction de saisie de mouvement sans devoir à
+chaque fois passez 5 minutes voire plus à attendre GENRSA.
+<p>
+Il faut toutefois l'utiliser avec
+prudence, et lancer au moins GENRSA lorsqu'on est sur d'avoir saisi toutes les
+mutations, au cas où d'autres modifications impacteraient le groupage par GHM!
+RSSDIFF2RSS est le programme le plus court, le plus simple, pouvant faire gagner
+le plus de temps, mais donc aussi le plus complexe d'utilisation.</p>
+<p>&nbsp;</p><hr /><p>&nbsp;</p>
+<a name="bibliotheque_perlmsi"></a><a href="sources/PerlMSI"><b>Biblothèque PerlMSI</b></a>
+<p>Il s'agit d'une nouvelle implémentation de toutes ces fonctions sous la forme d'une bibliothèque standard Perl, pouvant donc être utilisée par tout programme Perl pour manipuler des informations PMSI dans une approche orientée objet. Le but est de permettre
+à tout programmeur de pouvoir mélanger les fonctions des différences parties pour créer
+de nouveaux programmes encore plus utiles.
+<p>
+Il s'agit probablement donc du programme le plus intéressant pour un établissement voulant mettre en oeuvre PerlMSI pour un projet spécifique. Commencez par cet exemple destiné à <a href="sources/PerlMSI/exemple/dmimon-absent-rss.pl">décompter les coûts liés à la mauvaise attribution des DMI et des MON à des patients dont l'IEP n'est pas référencé dans le fichier RSS</a>. Il est simplement fait référence aux fichier FICHCOMP et RSS, ici de l'année 2009 - mais toute autre année sera gérée de la même manière, vu que l'object E_rss créé par la fonction RSS:readfrom est indépendant de l'année, l'objet RSS se chargeant de l'abstraction des formats.
+<p>
+Autre exemple : <a href="sources/PerlMSI/exemple/erreur-vidhosp.pl">l'analyse des erreurs administratives du VIDHOSP sous une forme texte simple à lire</a> se fait en appelant la méthode noncpam de l'object VIDHOSP créé par la fonction VIDHOSP::readfrom, là encore de manière indépendante du format. Quelques lignes suffisent à réaliser cette étape, qui peut alors donner lieu à des analyses plus poussées pour exclure les cas légitimes, comme par exemple les patients pris en charge au niveau du titre 2.
+<p>
+Bien sur, il n'est pas nécessaire de vouloir faire des choses aussi compliquées pour utiliser la bibliothèque. Elle peut aussi permettre de <a href="sources/PerlMSI/exemple/lecture-rss.pl">décompter en quelques secondes le nombre de lignes, d'IEP et de RSS uniques dans un fichier de RSS</a>, ou <a href="sources/PerlMSI/exemple/lecture-rsa.pl">transformer un fichier RSA en une sortie texte plus facilement lisible</a>. Sa souplesse d'utilisation en fait sa force.
+<p>&nbsp;</p><hr /><p>&nbsp;</p>
+<b><a name="rss2euro"></a><a href="sources/rss2euro/">RSS2EURO</a></b> (ne pas utiliser en pratique mais en recherche)
+<p>L'ATIH proclame fièrement que la T2A se rapproche de plus en plus finement des coûts révélés par l'ENC. Toutefois, on doit noter une complexification croissante des calculs de valorisation, comme on peut le voir dans l'allongement progressif des <a href="references.html#formules">formules de calcul de valorisation</a> chaque année.
+En pratique, outre le GHM, les suppléments liés à des actes ou des autorisations
+spécifiques pouvaient déjà changer de manière très importante la valorisation.
+<p>
+Mais actuellement, le problème principal vient de la « double articulation » entre les GHM et les GHS : le simple groupage ne permet pas de calculer la valorisation, car il faut déterminer pas seulement le bon GHM, mais surtout le bon GHS.
+Le principe d'un GHS par GHM était valable dans la majorité des cas au début de la T2A - il se voit toutefois battu en brèche par les évolutions récentes. Continuer à parler en GHM, comme le font la plupart des cliniciens qui s'intéressent à leur T2A, a donc beaucoup moins d'intérêt économique.
+<p>
+Toutefois, à partir d'un fichier RSS, il est quand même possible dans un grand nombre
+de cas de faire des évaluations de valorisation pour les RSS dont le GHM ne correspond
+qu'à un seul GHS, en utilisant  soit <a href="references.html#tarifs">la base complète des tarifs</a>, soit plus simplement <a href="sources/rss2euro/tarifs-2009.tsv">la table des tarifs de l'année voulue</a> et en excluant les cas où un GHM=plusieurs GHS. Mais cette simplification va être de moins en moins utilisable, vu la propention à associer plusieurs GHS à un GHM. Comment donc contourner cette difficulté, sans devoir réimplémenter immédiatement l'intégralité de la fonction de groupage ? (tâche difficile !)
+<p>L'approche retenue cherche à étudier dans quels cas cette
+double articulation peut se voir simplifée voire automatisée, initialement pour
+les GHS, puis à terme aussi pour les suppléments.
+En effet, dans un certain nombre de cas, il est possible d'utiliser les listes
+d'actes publiées au Journal Officiel pour choisir le bon GHS lorsque plusieurs
+sont possibles.<p> RSS2EURO vise donc à donner des valeur hors supplément par GHM
+à partir d'un fichier RSS. Outre l'aspect recherche visant à démonter les cas de double articulation GHM-GHS, il s'agit d'une approche
+expérimentale, pour mieux étudier les possibilités d'implémentation d'une future
+fonction de groupage libre lorsque ces informations extraites du Journal Officiel, <a href="references.html#tarifs">tarifs</a>, <a href="references.html#supplements">suppléments</a> et <a href="references.html#formules">formules de calculs</a>, sont
+croisées aux autorisations règlementaires (fichier dit FICUM).<p>
+RSS2EURO met notamment en évidence la nécessité, outre l'algorithme de groupage, de diposer
+d'une source documentaire de désambigüation lorsque plusieurs GHS correspondent à un GHM. Théoriquement, le quatrième élément (FICUM) et ce cinquième élément (1 GHM/n GHS) devraient suffire à calculer une valorisation à partir d'un GHM. Ainsi, serait possible de découper l'écriture d'une fonction de groupage libre en une première sous-tâche, d'intérêt pratique immédiat.
+<p>
+Les fichiers <a href="sources/rss2euro/ghm-nghs2009.txt">ghm-nghs2009</a> et <a href="sources/rss2euro/ghm-nghs2010.txt">ghm-nghs2010</a> donnent un exemple d'implémentation, et mettent surtout en évidence la nécessité de disposer d'une grammaire.
+Dans ce cadre, il est proposé à titre d'exemple une syntaxe basique
+avec logique booléenne et associative se contentant de 4 opérateurs : + pour AND,
+| pour OR, ! pour NOT, et les parenthèses comme OPÉRATEURS DE GROUPAGE.<p>
+Les équipes  intéressées par ces travaux sont invitées à ce joindre au projet.</p>
+					 </div>
+			
+			</div>
+		</div>
+		
+	</body>
+
+</html>
